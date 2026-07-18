@@ -9,13 +9,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const VIDEO_DURATION = 10;
 
-/**
- * CSS sticky stage (no GSAP pin) so sections below aren't crushed by pin-spacers.
- * Scroll distance drives video scrub + chapter text timelines.
- */
+/** Pinned walkthrough — restored. Text scrubs with staggered rise/blur. */
 export function Experience({ onReady }: { onReady?: () => void }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const veilKitchen = useRef<HTMLDivElement>(null);
   const veilVoid = useRef<HTMLDivElement>(null);
@@ -41,8 +38,15 @@ export function Experience({ onReady }: { onReady?: () => void }) {
 
     video.muted = true;
     video.playsInline = true;
-    video.pause();
-    video.currentTime = 0;
+    const playPromise = video.play();
+    if (playPromise?.then) {
+      playPromise
+        .then(() => {
+          video.pause();
+          video.currentTime = 0;
+        })
+        .catch(() => {});
+    }
 
     return () => {
       window.clearTimeout(fallback);
@@ -51,42 +55,31 @@ export function Experience({ onReady }: { onReady?: () => void }) {
   }, [onReady]);
 
   useEffect(() => {
-    const track = trackRef.current;
+    const root = rootRef.current;
+    const pin = pinRef.current;
     const video = videoRef.current;
-    if (!track || !video || !ready) return;
+    if (!root || !pin || !video || !ready) return;
 
     const ctx = gsap.context(() => {
       const chapters = gsap.utils.toArray<HTMLElement>("[data-chapter]");
 
-      // Prepare text layers for scrub animation
-      chapters.forEach((el) => {
-        const eyebrow = el.querySelector("[data-anim='eyebrow']");
-        const title = el.querySelector("[data-anim='title']");
-        const body = el.querySelector("[data-anim='body']");
-        gsap.set(el, { autoAlpha: 0 });
-        gsap.set([eyebrow, title, body].filter(Boolean), {
-          autoAlpha: 0,
-          y: 36,
-          filter: "blur(8px)",
+      chapters.forEach((el, i) => {
+        gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 });
+        gsap.set(el.querySelectorAll("[data-anim]"), {
+          autoAlpha: i === 0 ? 1 : 0,
+          y: i === 0 ? 0 : 28,
+          filter: i === 0 ? "blur(0px)" : "blur(6px)",
         });
       });
 
-      // Show first beat immediately
-      const first = chapters[0];
-      if (first) {
-        gsap.set(first, { autoAlpha: 1 });
-        gsap.set(first.querySelectorAll("[data-anim]"), {
-          autoAlpha: 1,
-          y: 0,
-          filter: "blur(0px)",
-        });
-      }
-
       ScrollTrigger.create({
-        trigger: track,
+        trigger: root,
         start: "top top",
         end: "bottom bottom",
-        scrub: 0.45,
+        pin: pin,
+        scrub: 0.55,
+        anticipatePin: 1,
+        pinSpacing: true,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           const duration =
@@ -94,7 +87,7 @@ export function Experience({ onReady }: { onReady?: () => void }) {
               ? video.duration
               : VIDEO_DURATION;
           const t = self.progress * duration * 0.999;
-          if (Math.abs(video.currentTime - t) > 0.025) {
+          if (Math.abs(video.currentTime - t) > 0.03) {
             video.currentTime = t;
           }
 
@@ -110,50 +103,47 @@ export function Experience({ onReady }: { onReady?: () => void }) {
           const mood = CHAPTERS[idx]?.mood ?? "kitchen";
           if (veilKitchen.current && veilVoid.current) {
             gsap.set(veilKitchen.current, {
-              autoAlpha: mood === "void" ? 0.4 : 1,
+              opacity: mood === "void" ? 0.35 : 1,
             });
             gsap.set(veilVoid.current, {
-              autoAlpha: mood === "void" ? 0.7 : 0,
+              opacity: mood === "void" ? 0.55 : 0,
             });
           }
 
           chapters.forEach((el, i) => {
             const c = CHAPTERS[i];
             const mid = (c.from + c.to) / 2;
-            const half = Math.max((c.to - c.from) / 2, 0.04);
+            const half = Math.max((c.to - c.from) / 2, 0.035);
             const dist = Math.abs(self.progress - mid);
-            // Peak at beat center; soft crossfade between neighbors
-            const visibility = gsap.utils.clamp(0, 1, 1 - dist / (half * 1.05));
+            const visibility = gsap.utils.clamp(0, 1, 1 - dist / (half * 1.25));
             const signed = (self.progress - mid) / half;
-            const y = signed * -32;
-            const blur = (1 - visibility) * 10;
+            const y = signed * -24;
+            const blur = (1 - visibility) * 8;
 
-            gsap.set(el, { autoAlpha: visibility });
+            gsap.set(el, {
+              autoAlpha: visibility,
+              pointerEvents: visibility > 0.4 ? "auto" : "none",
+            });
 
-            const eyebrow = el.querySelector("[data-anim='eyebrow']");
-            const title = el.querySelector("[data-anim='title']");
-            const body = el.querySelector("[data-anim='body']");
-
-            // Staggered scrub: eyebrow leads, body trails
             const apply = (node: Element | null, lag: number) => {
               if (!node) return;
-              const v = gsap.utils.clamp(0, 1, visibility * 1.2 - lag);
+              const v = gsap.utils.clamp(0, 1, visibility * 1.15 - lag);
               gsap.set(node, {
                 autoAlpha: v,
-                y: y + (1 - v) * 18,
-                filter: `blur(${blur * (1 - v * 0.35)}px)`,
+                y: y + (1 - v) * 16,
+                filter: `blur(${blur * (1 - v * 0.4)}px)`,
               });
             };
-            apply(eyebrow, 0);
-            apply(title, 0.1);
-            apply(body, 0.2);
+
+            apply(el.querySelector("[data-anim='eyebrow']"), 0);
+            apply(el.querySelector("[data-anim='title']"), 0.1);
+            apply(el.querySelector("[data-anim='body']"), 0.18);
           });
         },
       });
 
-      // Refresh after layout settles (fonts / video)
       requestAnimationFrame(() => ScrollTrigger.refresh());
-    }, track);
+    }, root);
 
     const onResize = () => ScrollTrigger.refresh();
     window.addEventListener("resize", onResize);
@@ -167,14 +157,13 @@ export function Experience({ onReady }: { onReady?: () => void }) {
   return (
     <section
       id="experience"
-      ref={trackRef}
-      className="relative z-0 w-full"
-      style={{ height: `${CHAPTERS.length * 100}vh` }}
+      ref={rootRef}
+      className="relative z-0"
+      style={{ height: `${CHAPTERS.length * 90}vh` }}
     >
-      {/* Sticky stage — leaves normal document flow for everything below */}
       <div
-        ref={stageRef}
-        className="sticky top-0 z-0 h-[100dvh] w-full overflow-hidden bg-[var(--ink)]"
+        ref={pinRef}
+        className="relative h-[100dvh] w-full overflow-hidden bg-[var(--ink)]"
       >
         <video
           ref={videoRef}
@@ -186,7 +175,10 @@ export function Experience({ onReady }: { onReady?: () => void }) {
           aria-hidden
         />
 
-        <div ref={veilKitchen} className="pointer-events-none absolute inset-0">
+        <div
+          ref={veilKitchen}
+          className="pointer-events-none absolute inset-0"
+        >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_18%,rgba(8,8,8,0.5)_68%,rgba(8,8,8,0.88)_100%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-transparent to-[var(--ink)]/45" />
         </div>

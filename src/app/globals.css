@@ -25,7 +25,6 @@
   box-sizing: border-box;
 }
 
-/* Avoid scroll-behavior:smooth — fights ScrollTrigger scrub */
 html,
 body {
   background: var(--ink);
@@ -34,12 +33,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--font-body);
-}
-
-/* Isolate sticky experience from later stacking contexts */
-main {
-  position: relative;
-  isolation: isolate;
 }
 
 .font-display {
@@ -53,4 +46,9 @@ main {
 ::selection {
   background: color-mix(in srgb, var(--ember) 45%, transparent);
   color: #fff;
+}
+
+/* Pin spacer from GSAP should not leak weird overflow */
+.pin-spacer {
+  background: var(--ink) !important;
 }

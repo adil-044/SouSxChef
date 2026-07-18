@@ -8,8 +8,8 @@ import { ScrambleText } from "../ui/ScrambleText";
 
 const LINKS = [
   { id: "experience", label: "Story" },
-  { id: "cta", label: "Demo" },
   { id: "agents", label: "Agents" },
+  { id: "proof", label: "Proof" },
   { id: "pricing", label: "Pricing" },
 ] as const;
 
