@@ -39,7 +39,7 @@ const STATS = [
 
 export function AfterWalkthrough() {
   return (
-    <div className="relative z-20 w-full bg-[var(--ink)] text-center">
+    <div className="relative z-20 w-full bg-[var(--ink)]">
       {/* CTA */}
       <section
         id="cta"
@@ -52,7 +52,7 @@ export function AfterWalkthrough() {
         <div className="absolute inset-0 bg-[var(--ink)]/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/50 to-[var(--ink)]/40" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-24 sm:px-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-24 text-center sm:px-10">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
             Ready when you are
           </p>
@@ -61,7 +61,7 @@ export function AfterWalkthrough() {
             <br />
             Your whole kitchen.
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
+          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
             Inventory, labor, staff chat, and demand foresight—running while chefs stay on the
             pass.
           </p>
@@ -84,21 +84,24 @@ export function AfterWalkthrough() {
         </div>
       </section>
 
-      {/* Agents — 2×2 centered grid */}
-      <section id="agents" className="w-full border-t border-white/10 px-6 py-24 sm:px-10 md:py-32">
-        <div className="mx-auto w-full max-w-5xl">
+      {/* Agents */}
+      <section
+        id="agents"
+        className="flex w-full justify-center border-t border-white/10 px-6 py-24 sm:px-10 md:py-32"
+      >
+        <div className="flex w-full max-w-5xl flex-col items-center text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
             The agents
           </p>
-          <h2 className="font-display mx-auto mt-4 max-w-[18ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white">
+          <h2 className="font-display mt-4 max-w-[18ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white">
             Four specialists. One kitchen brain.
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/55">
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/55">
             SousXChef watches inventory, labor, and demand—and talks to your team where they
             already live: their phones.
           </p>
 
-          <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
+          <div className="mt-16 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
             {AGENTS.map((a) => (
               <article
                 key={a.tag}
@@ -121,17 +124,17 @@ export function AfterWalkthrough() {
       {/* Proof */}
       <section
         id="proof"
-        className="w-full border-t border-white/10 bg-[var(--steel)] px-6 py-24 sm:px-10 md:py-32"
+        className="flex w-full justify-center border-t border-white/10 bg-[var(--steel)] px-6 py-24 sm:px-10 md:py-32"
       >
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="flex w-full max-w-5xl flex-col items-center text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
             From the floor
           </p>
-          <h2 className="font-display mx-auto mt-4 max-w-[16ch] text-[clamp(2.2rem,5vw,3.5rem)] font-medium leading-[1.05] text-white">
+          <h2 className="font-display mt-4 max-w-[16ch] text-[clamp(2.2rem,5vw,3.5rem)] font-medium leading-[1.05] text-white">
             Built for people who live service.
           </h2>
 
-          <div className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+          <div className="mt-16 grid w-full grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
             {PROOF_QUOTES.map((q) => (
               <blockquote
                 key={q.name}
@@ -150,7 +153,7 @@ export function AfterWalkthrough() {
             ))}
           </div>
 
-          <div className="mx-auto mt-20 grid max-w-4xl grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 pt-14 sm:grid-cols-4">
+          <div className="mt-20 grid w-full max-w-4xl grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 pt-14 sm:grid-cols-4">
             {STATS.map((s) => (
               <div key={s.l} className="flex flex-col items-center">
                 <p className="font-display text-[2.5rem] leading-none text-[var(--ember)] sm:text-[2.75rem]">
@@ -167,53 +170,54 @@ export function AfterWalkthrough() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="w-full border-t border-white/10 px-6 py-24 sm:px-10 md:py-32">
-        <div className="mx-auto w-full max-w-5xl">
+      <section
+        id="pricing"
+        className="flex w-full justify-center border-t border-white/10 px-6 py-24 sm:px-10 md:py-32"
+      >
+        <div className="flex w-full max-w-5xl flex-col items-center text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
             Pricing
           </p>
-          <h2 className="font-display mx-auto mt-4 text-[clamp(2.2rem,5vw,3.5rem)] font-medium text-white">
+          <h2 className="font-display mt-4 text-[clamp(2.2rem,5vw,3.5rem)] font-medium text-white">
             Clear plates. Clear pricing.
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-[15px] text-white/55">
+          <p className="mt-4 max-w-lg text-[15px] text-white/55">
             Start with one location. Expand when the agents earn their keep.
           </p>
 
-          <div className="mt-16 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+          <div className="mt-16 grid w-full grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
             {PRICING_TIERS.map((tier) => (
               <article
                 key={tier.name}
-                className={`mx-auto flex w-full max-w-md flex-col items-center px-8 py-10 text-center lg:max-w-none ${
+                className={`flex w-full flex-col items-center px-8 py-10 text-center ${
                   tier.featured
                     ? "bg-[var(--ember)] text-[var(--ink)]"
                     : "border border-white/15 text-white"
                 }`}
               >
-                <div className="flex w-full flex-col items-center">
-                  {tier.featured && (
-                    <span className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] opacity-70">
-                      Most kitchens
+                {tier.featured && (
+                  <span className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] opacity-70">
+                    Most kitchens
+                  </span>
+                )}
+                <h3 className="font-display text-[1.85rem]">{tier.name}</h3>
+                <p className="mt-5 flex items-baseline justify-center gap-1">
+                  <span className="font-display text-[3rem] leading-none">{tier.price}</span>
+                  {tier.period && (
+                    <span
+                      className={`font-mono text-[12px] ${tier.featured ? "opacity-60" : "text-white/40"}`}
+                    >
+                      {tier.period}
                     </span>
                   )}
-                  <h3 className="font-display text-[1.85rem]">{tier.name}</h3>
-                  <p className="mt-5 flex items-baseline justify-center gap-1">
-                    <span className="font-display text-[3rem] leading-none">{tier.price}</span>
-                    {tier.period && (
-                      <span
-                        className={`font-mono text-[12px] ${tier.featured ? "opacity-60" : "text-white/40"}`}
-                      >
-                        {tier.period}
-                      </span>
-                    )}
-                  </p>
-                  <p
-                    className={`mt-4 max-w-xs text-[14px] leading-relaxed ${
-                      tier.featured ? "opacity-75" : "text-white/50"
-                    }`}
-                  >
-                    {tier.blurb}
-                  </p>
-                </div>
+                </p>
+                <p
+                  className={`mt-4 max-w-xs text-[14px] leading-relaxed ${
+                    tier.featured ? "opacity-75" : "text-white/50"
+                  }`}
+                >
+                  {tier.blurb}
+                </p>
                 <ul className="mt-8 flex w-full flex-1 flex-col items-center gap-2.5">
                   {tier.features.map((f) => (
                     <li
@@ -243,13 +247,16 @@ export function AfterWalkthrough() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="w-full border-t border-white/10 bg-[var(--steel)]">
-        <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-16 sm:px-10 md:py-20">
+      <footer
+        id="contact"
+        className="flex w-full justify-center border-t border-white/10 bg-[var(--steel)]"
+      >
+        <div className="flex w-full max-w-3xl flex-col items-center px-6 py-16 text-center sm:px-10 md:py-20">
           <div className="flex items-center justify-center gap-2">
             <SynapseXLogo className="h-4 w-4 text-[var(--ember)]" />
             <span className="font-mono text-[13px] text-white/80">SousXChef</span>
           </div>
-          <p className="mx-auto mt-6 max-w-md text-[14px] leading-relaxed text-white/45">
+          <p className="mt-6 max-w-md text-[14px] leading-relaxed text-white/45">
             AI agents for restaurant inventory, labor scheduling, staff chat, and demand
             forecasting.
           </p>

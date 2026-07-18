@@ -19,10 +19,18 @@
   --font-mono: "Space Mono", monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+/* Keep reset under @layer so Tailwind utilities (mx-auto, etc.) can win */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 html,
