@@ -7,14 +7,14 @@ import { CHAPTERS } from "@/lib/chapters";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function Experience({
-  onReady,
-}: {
-  onReady?: () => void;
-}) {
+const VIDEO_DURATION = 10;
+
+export function Experience({ onReady }: { onReady?: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const veilKitchen = useRef<HTMLDivElement>(null);
+  const veilVoid = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState(false);
@@ -44,9 +44,7 @@ export function Experience({
           video.pause();
           video.currentTime = 0;
         })
-        .catch(() => {
-          /* autoplay blocked — scrub still works once metadata loads */
-        });
+        .catch(() => {});
     }
 
     return () => {
@@ -69,14 +67,16 @@ export function Experience({
         start: "top top",
         end: "bottom bottom",
         pin: pin,
-        scrub: 0.65,
+        scrub: 0.55,
         anticipatePin: 1,
         onUpdate: (self) => {
-          if (video.duration && Number.isFinite(video.duration)) {
-            const t = self.progress * video.duration * 0.999;
-            if (Math.abs(video.currentTime - t) > 0.04) {
-              video.currentTime = t;
-            }
+          const duration =
+            video.duration && Number.isFinite(video.duration)
+              ? video.duration
+              : VIDEO_DURATION;
+          const t = self.progress * duration * 0.999;
+          if (Math.abs(video.currentTime - t) > 0.03) {
+            video.currentTime = t;
           }
 
           let idx = 0;
@@ -88,17 +88,27 @@ export function Experience({
             setActive(idx);
           }
 
+          const mood = CHAPTERS[idx]?.mood ?? "kitchen";
+          if (veilKitchen.current && veilVoid.current) {
+            gsap.set(veilKitchen.current, {
+              opacity: mood === "void" ? 0.35 : 1,
+            });
+            gsap.set(veilVoid.current, {
+              opacity: mood === "void" ? 0.55 : 0,
+            });
+          }
+
           chapters.forEach((el, i) => {
             const c = CHAPTERS[i];
             const mid = (c.from + c.to) / 2;
-            const half = Math.max((c.to - c.from) / 2, 0.04);
+            const half = Math.max((c.to - c.from) / 2, 0.035);
             const dist = Math.abs(self.progress - mid);
-            const opacity = gsap.utils.clamp(0, 1, 1 - dist / (half * 1.2));
-            const y = (self.progress - mid) * -36;
+            const opacity = gsap.utils.clamp(0, 1, 1 - dist / (half * 1.35));
+            const y = (self.progress - mid) * -28;
             gsap.set(el, {
               opacity,
               y,
-              pointerEvents: opacity > 0.35 ? "auto" : "none",
+              pointerEvents: opacity > 0.4 ? "auto" : "none",
             });
           });
         },
@@ -107,12 +117,13 @@ export function Experience({
 
     return () => ctx.revert();
   }, [ready]);
+
   return (
     <section
       id="experience"
       ref={rootRef}
       className="relative"
-      style={{ height: `${CHAPTERS.length * 100}vh` }}
+      style={{ height: `${CHAPTERS.length * 90}vh` }}
     >
       <div
         ref={pinRef}
@@ -128,11 +139,26 @@ export function Experience({
           aria-hidden
         />
 
-        {/* Cinematic veils — keep copy readable without killing the plate */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(8,8,8,0.55)_70%,rgba(8,8,8,0.85)_100%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-transparent to-[var(--ink)]/50" />
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          ref={veilKitchen}
+          className="pointer-events-none absolute inset-0 transition-opacity"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_18%,rgba(8,8,8,0.5)_68%,rgba(8,8,8,0.88)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-transparent to-[var(--ink)]/45" />
+        </div>
+
+        {/* Softer edge vignette for black-void macros so produce/protein stay hero */}
+        <div
+          ref={veilVoid}
+          className="pointer-events-none absolute inset-0 opacity-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%)",
+          }}
+        />
+
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.035]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)",
@@ -140,28 +166,27 @@ export function Experience({
           }}
         />
 
-        {/* Progress rail */}
-        <div className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-3 sm:right-8 md:flex">
+        {/* Timecode + beat rail */}
+        <div className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-2.5 sm:right-8 md:flex">
           {CHAPTERS.map((c, i) => (
             <div key={c.id} className="flex items-center gap-3">
               <span
-                className={`font-mono text-[10px] tracking-[0.2em] transition-colors duration-500 ${
-                  i === active ? "text-[var(--ember)]" : "text-white/25"
+                className={`font-mono text-[9px] tracking-[0.16em] transition-colors duration-400 ${
+                  i === active ? "text-[var(--ember)]" : "text-white/20"
                 }`}
               >
-                {c.label}
+                0:{String(c.t0).padStart(2, "0")}
               </span>
               <span
-                className={`h-px transition-all duration-500 ${
-                  i === active ? "w-8 bg-[var(--ember)]" : "w-4 bg-white/20"
+                className={`h-px transition-all duration-400 ${
+                  i === active ? "w-7 bg-[var(--ember)]" : "w-3 bg-white/15"
                 }`}
               />
             </div>
           ))}
         </div>
 
-        {/* Chapter overlays */}
-        <div className="absolute inset-0 z-10 flex items-end px-5 pb-16 pt-28 sm:px-10 sm:pb-20 md:px-16">
+        <div className="absolute inset-0 z-10">
           {CHAPTERS.map((c, i) => (
             <article
               key={c.id}
@@ -175,14 +200,14 @@ export function Experience({
               }`}
               style={{ opacity: i === 0 ? 1 : 0 }}
             >
-              <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.26em] text-[var(--ember)] sm:text-[11px]">
                 {c.eyebrow}
               </p>
-              <h2 className="font-display max-w-[16ch] whitespace-pre-line text-[clamp(2.4rem,7vw,5.5rem)] font-medium leading-[0.95] tracking-[-0.02em] text-white">
+              <h2 className="font-display max-w-[15ch] whitespace-pre-line text-[clamp(2.1rem,6.5vw,4.75rem)] font-medium leading-[0.96] tracking-[-0.02em] text-white">
                 {c.title}
               </h2>
               <p
-                className={`mt-5 max-w-md text-[15px] leading-relaxed text-white/65 sm:text-[16px] ${
+                className={`mt-4 max-w-md text-[14px] leading-relaxed text-white/65 sm:mt-5 sm:text-[16px] ${
                   c.align === "center" ? "mx-auto" : ""
                 }`}
               >
@@ -192,14 +217,13 @@ export function Experience({
           ))}
         </div>
 
-        {/* Scroll cue — first beat only */}
         <div
           className={`pointer-events-none absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-700 ${
             active === 0 ? "opacity-70" : "opacity-0"
           }`}
         >
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
-            Scroll the line
+            Scroll the walkthrough
           </span>
           <span className="block h-8 w-px animate-pulse bg-white/40" />
         </div>

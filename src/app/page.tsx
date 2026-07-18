@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Navbar } from "@/components/sections/Navbar";
 import { Experience } from "@/components/sections/Experience";
+import { ClosingCTA } from "@/components/sections/ClosingCTA";
 import { Agents, Proof } from "@/components/sections/Agents";
 import { Pricing } from "@/components/sections/Pricing";
 import { Footer } from "@/components/sections/Footer";
@@ -14,6 +15,7 @@ export default function Home() {
     <main className="min-h-screen w-full bg-[var(--ink)]">
       <Navbar entranceComplete={ready} />
       <Experience onReady={() => setReady(true)} />
+      <ClosingCTA />
       <Agents />
       <Proof />
       <Pricing />
