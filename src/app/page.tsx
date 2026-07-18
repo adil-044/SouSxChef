@@ -1,24 +1,22 @@
 "use client";
+
 import { useState } from "react";
 import { Navbar } from "@/components/sections/Navbar";
-import { Hero } from "@/components/sections/Hero";
-import { CinematicText } from "@/components/sections/CinematicText";
-import { Metrics } from "@/components/sections/Metrics";
-import { Technology } from "@/components/sections/Technology";
-import { Architecture } from "@/components/sections/Architecture";
+import { Experience } from "@/components/sections/Experience";
+import { Agents, Proof } from "@/components/sections/Agents";
+import { Pricing } from "@/components/sections/Pricing";
 import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
-  const [entranceComplete, setEntranceComplete] = useState(false);
+  const [ready, setReady] = useState(false);
 
   return (
-    <main className="w-full bg-black min-h-screen">
-      <Navbar entranceComplete={entranceComplete} />
-      <Hero onEntranceComplete={() => setEntranceComplete(true)} />
-      <CinematicText />
-      <Metrics />
-      <Technology />
-      <Architecture />
+    <main className="min-h-screen w-full bg-[var(--ink)]">
+      <Navbar entranceComplete={ready} />
+      <Experience onReady={() => setReady(true)} />
+      <Agents />
+      <Proof />
+      <Pricing />
       <Footer />
     </main>
   );
