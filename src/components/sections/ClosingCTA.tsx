@@ -1,12 +1,16 @@
 "use client";
 
+import { useSectionReveal } from "@/hooks/useSectionReveal";
+
 export function ClosingCTA() {
+  const ref = useSectionReveal<HTMLElement>();
+
   return (
     <section
       id="cta"
-      className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[var(--ink)] px-5 py-24 sm:px-10"
+      ref={ref}
+      className="relative z-10 flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[var(--ink)] px-5 py-24 sm:px-10"
     >
-      {/* Static final-plate still — no scrub, no motion */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url(/media/hero/plate-still.jpg)" }}
@@ -25,20 +29,29 @@ export function ClosingCTA() {
       />
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
+        <p
+          data-reveal
+          className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]"
+        >
           Ready when you are
         </p>
-        <h2 className="font-display mt-5 text-[clamp(2.6rem,7vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.02em] text-white">
+        <h2
+          data-reveal
+          className="font-display mt-5 text-[clamp(2.6rem,7vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.02em] text-white"
+        >
           One brain.
           <br />
           Your whole kitchen.
         </h2>
-        <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/60 sm:text-[17px]">
+        <p
+          data-reveal
+          className="mt-6 max-w-md text-[15px] leading-relaxed text-white/60 sm:text-[17px]"
+        >
           Inventory photos, labor schedules, staff chat, and demand foresight—running
           while your chefs stay on the pass.
         </p>
 
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
+        <div data-reveal className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
           <a
             href="https://calendly.com/uptisement/30min"
             target="_blank"
@@ -55,7 +68,7 @@ export function ClosingCTA() {
           </a>
         </div>
 
-        <p className="mt-10 font-mono text-[11px] tracking-wide text-white/30">
+        <p data-reveal className="mt-10 font-mono text-[11px] tracking-wide text-white/30">
           No per-seat tax on your line cooks · Start at one location
         </p>
       </div>

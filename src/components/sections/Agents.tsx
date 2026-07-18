@@ -1,6 +1,7 @@
 "use client";
 
 import { PROOF_QUOTES } from "@/lib/chapters";
+import { useSectionReveal } from "@/hooks/useSectionReveal";
 
 const AGENTS = [
   {
@@ -26,16 +27,31 @@ const AGENTS = [
 ];
 
 export function Agents() {
+  const ref = useSectionReveal<HTMLElement>();
+
   return (
-    <section id="agents" className="relative bg-[var(--ink)] px-5 py-24 sm:px-10 md:px-16 md:py-32">
+    <section
+      id="agents"
+      ref={ref}
+      className="relative z-10 bg-[var(--ink)] px-5 py-24 sm:px-10 md:px-16 md:py-32"
+    >
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
+        <p
+          data-reveal
+          className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]"
+        >
           The agents
         </p>
-        <h2 className="font-display mt-4 max-w-[18ch] text-[clamp(2.2rem,5vw,4rem)] font-medium leading-[1.05] tracking-[-0.02em] text-white">
+        <h2
+          data-reveal
+          className="font-display mt-4 max-w-[18ch] text-[clamp(2.2rem,5vw,4rem)] font-medium leading-[1.05] tracking-[-0.02em] text-white"
+        >
           Four specialists. One kitchen brain.
         </h2>
-        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/55 sm:text-[16px]">
+        <p
+          data-reveal
+          className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/55 sm:text-[16px]"
+        >
           SousXChef is not another dashboard you ignore. It is a set of agents that watch inventory,
           labor, and demand—and talk to your team where they already live: their phones.
         </p>
@@ -44,6 +60,7 @@ export function Agents() {
           {AGENTS.map((a) => (
             <article
               key={a.tag}
+              data-reveal
               className="group bg-[var(--ink)] p-8 transition-colors duration-500 hover:bg-[var(--steel)] sm:p-10"
             >
               <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/35 group-hover:text-[var(--ember)]">
@@ -64,8 +81,14 @@ export function Agents() {
 }
 
 export function Proof() {
+  const ref = useSectionReveal<HTMLElement>();
+
   return (
-    <section id="proof" className="relative overflow-hidden bg-[var(--steel)] px-5 py-24 sm:px-10 md:px-16 md:py-32">
+    <section
+      id="proof"
+      ref={ref}
+      className="relative z-10 overflow-hidden bg-[var(--steel)] px-5 py-24 sm:px-10 md:px-16 md:py-32"
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
@@ -75,16 +98,26 @@ export function Proof() {
         }}
       />
       <div className="relative mx-auto max-w-6xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
+        <p
+          data-reveal
+          className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]"
+        >
           From the floor
         </p>
-        <h2 className="font-display mt-4 max-w-[16ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white">
+        <h2
+          data-reveal
+          className="font-display mt-4 max-w-[16ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white"
+        >
           Built for people who live service—not spreadsheets.
         </h2>
 
         <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
           {PROOF_QUOTES.map((q) => (
-            <blockquote key={q.name} className="flex flex-col border-t border-white/15 pt-8">
+            <blockquote
+              key={q.name}
+              data-reveal
+              className="flex flex-col border-t border-white/15 pt-8"
+            >
               <p className="font-display text-[1.35rem] leading-snug text-white/90 sm:text-[1.5rem]">
                 “{q.quote}”
               </p>
@@ -100,7 +133,10 @@ export function Proof() {
           ))}
         </div>
 
-        <div className="mt-20 grid grid-cols-2 gap-6 border-t border-white/10 pt-12 sm:grid-cols-4">
+        <div
+          data-reveal
+          className="mt-20 grid grid-cols-2 gap-6 border-t border-white/10 pt-12 sm:grid-cols-4"
+        >
           {[
             { n: "20+", l: "fewer nightly inventory texts" },
             { n: "~18%", l: "less protein over-order*" },
@@ -115,7 +151,7 @@ export function Proof() {
             </div>
           ))}
         </div>
-        <p className="mt-6 font-mono text-[10px] text-white/25">
+        <p data-reveal className="mt-6 font-mono text-[10px] text-white/25">
           *Early customer range — results vary by volume and menu.
         </p>
       </div>

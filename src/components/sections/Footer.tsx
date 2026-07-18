@@ -4,7 +4,7 @@ import { SynapseXLogo } from "../ui/SynapseXLogo";
 
 export function Footer() {
   return (
-    <footer id="contact" className="relative overflow-hidden bg-[var(--steel)]">
+    <footer id="contact" className="relative z-10 overflow-hidden bg-[var(--steel)]">
       <div className="relative mx-auto grid max-w-6xl gap-0 lg:grid-cols-2">
         <div className="relative min-h-[320px] lg:min-h-[480px]">
           <video

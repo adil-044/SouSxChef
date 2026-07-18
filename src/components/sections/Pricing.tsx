@@ -1,18 +1,31 @@
 "use client";
 
 import { PRICING_TIERS } from "@/lib/chapters";
+import { useSectionReveal } from "@/hooks/useSectionReveal";
 
 export function Pricing() {
+  const ref = useSectionReveal<HTMLElement>();
+
   return (
-    <section id="pricing" className="relative bg-[var(--ink)] px-5 py-24 sm:px-10 md:px-16 md:py-32">
+    <section
+      id="pricing"
+      ref={ref}
+      className="relative z-10 bg-[var(--ink)] px-5 py-24 sm:px-10 md:px-16 md:py-32"
+    >
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]">
+        <p
+          data-reveal
+          className="font-mono text-[11px] uppercase tracking-[0.28em] text-[var(--ember)]"
+        >
           Pricing
         </p>
-        <h2 className="font-display mt-4 max-w-[14ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white">
+        <h2
+          data-reveal
+          className="font-display mt-4 max-w-[14ch] text-[clamp(2.2rem,5vw,3.75rem)] font-medium leading-[1.05] text-white"
+        >
           Clear plates. Clear pricing.
         </h2>
-        <p className="mt-5 max-w-lg text-[15px] text-white/55">
+        <p data-reveal className="mt-5 max-w-lg text-[15px] text-white/55">
           Start with one location. Expand when the agents earn their keep. No per-seat tax on your
           line cooks.
         </p>
@@ -21,6 +34,7 @@ export function Pricing() {
           {PRICING_TIERS.map((tier) => (
             <article
               key={tier.name}
+              data-reveal
               className={`flex flex-col border p-8 sm:p-10 ${
                 tier.featured
                   ? "border-[var(--ember)] bg-[var(--steel)]"

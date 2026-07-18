@@ -25,10 +25,7 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
+/* Avoid scroll-behavior:smooth — fights ScrollTrigger scrub */
 html,
 body {
   background: var(--ink);
@@ -37,6 +34,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--font-body);
+}
+
+/* Isolate sticky experience from later stacking contexts */
+main {
+  position: relative;
+  isolation: isolate;
 }
 
 .font-display {

@@ -12,14 +12,17 @@ export default function Home() {
   const [ready, setReady] = useState(false);
 
   return (
-    <main className="min-h-screen w-full bg-[var(--ink)]">
+    <main className="relative min-h-screen w-full bg-[var(--ink)]">
       <Navbar entranceComplete={ready} />
       <Experience onReady={() => setReady(true)} />
-      <ClosingCTA />
-      <Agents />
-      <Proof />
-      <Pricing />
-      <Footer />
+      {/* Post-hero stack sits above sticky stage in paint order */}
+      <div className="relative z-10 bg-[var(--ink)]">
+        <ClosingCTA />
+        <Agents />
+        <Proof />
+        <Pricing />
+        <Footer />
+      </div>
     </main>
   );
 }
