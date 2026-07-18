@@ -61,13 +61,15 @@ export function Hero({ onEntranceComplete }: { onEntranceComplete: () => void })
       onMouseMove={handleMouseMove}
       onMouseLeave={() => { lastXRef.current = null; }}
     >
-      {/* Background Video */}
+      {/* Showcase storyboard — local asset */}
       <video
         ref={videoRef}
-        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260622_083515_290e5a10-0b95-41af-a5e2-32b6389baa4d.mp4"
+        src="/media/hero/showcase.mp4"
         className="absolute inset-0 w-full h-full object-cover opacity-80"
         playsInline
         muted
+        autoPlay
+        loop
         onSeeked={handleSeeked}
       />
       
@@ -76,20 +78,6 @@ export function Hero({ onEntranceComplete }: { onEntranceComplete: () => void })
         className="absolute inset-0 pointer-events-none opacity-5"
         style={{ backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px)", backgroundSize: "24px 24px" }}
       />
-      
-      {/* Watermark */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden mt-[50px]">
-        <h2 
-          className="font-anton uppercase opacity-10 select-none whitespace-nowrap text-[clamp(100px,25vw,521px)] tracking-[-4px]"
-          style={{ 
-            background: "radial-gradient(circle, rgba(142,127,148,0) 0%, #8E7F94 70%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          }}
-        >
-          ORCHESTRATION
-        </h2>
-      </div>
 
       <div className="flex-1" />
 
@@ -112,7 +100,7 @@ export function Hero({ onEntranceComplete }: { onEntranceComplete: () => void })
             transition={{ duration: 0.9, delay: 0.2, ease: [0.215, 0.610, 0.355, 1.000] }}
             className="max-w-sm text-[13px] sm:text-[15px] text-white/60 leading-relaxed"
           >
-            Built at the intersection of restaurant operations and conversational intelligence. SousXChef maps your inventory and labor schedules into a single text-based system. Control your entire kitchen's food cost and scheduling chaos entirely through SMS.
+            Built at the intersection of restaurant operations and conversational intelligence. SousXChef maps your inventory and labor schedules into a single text-based system. Control your entire kitchen&apos;s food cost and scheduling chaos entirely through SMS.
           </motion.p>
         </div>
         
