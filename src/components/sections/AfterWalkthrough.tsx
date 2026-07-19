@@ -75,10 +75,10 @@ export function AfterWalkthrough() {
               Book a demo
             </a>
             <a
-              href="#pricing"
+              href="/onboarding"
               className="inline-flex h-12 w-full max-w-xs items-center justify-center border border-white/30 px-8 font-mono text-[12px] uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-[var(--ink)] sm:w-auto"
             >
-              See pricing
+              Get started
             </a>
           </div>
         </div>

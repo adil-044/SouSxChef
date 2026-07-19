@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SousXChef
 
-## Getting Started
+AI agents for restaurant kitchens — inventory, labor, Telegram chat, forecasting, and an owner dashboard.
 
-First, run the development server:
+**Live:** [sousxchef.online](https://sousxchef.online) · [sou-sx-chef.vercel.app](https://sou-sx-chef.vercel.app)
+
+## Stack
+
+- Next.js 16 (App Router) + TypeScript + Tailwind v4
+- GSAP ScrollTrigger cinematic landing
+- Supabase Auth/Postgres (optional — **Demo mode** without keys)
+- Telegram Bot webhook (`/api/telegram/webhook`)
+
+## App routes
+
+| Path | Description |
+|------|-------------|
+| `/` | Immersive scroll landing |
+| `/login` `/signup` | Auth UI (Supabase when configured) |
+| `/onboarding` | Multi-step kitchen questionnaire |
+| `/dashboard` | Owner home + KPIs |
+| `/dashboard/inventory` | SKU table + count log |
+| `/dashboard/schedule` | Weekly labor grid |
+| `/dashboard/chat` | Staff / agent thread |
+| `/dashboard/forecast` | Cover hints |
+| `/dashboard/settings` | Telegram link |
+
+## Local demo (no secrets)
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Open `/` → **Get started** or `/login` → **Continue in demo mode**
+2. Complete onboarding → dashboard
+3. Data persists in `localStorage` (`sousxchef-demo-v1`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` → `.env.local` when ready:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_BOT_USERNAME=SousXChefBot
+TELEGRAM_WEBHOOK_SECRET=
+NEXT_PUBLIC_APP_URL=https://sousxchef.online
+```
 
-To learn more about Next.js, take a look at the following resources:
+SQL schema: [`supabase/migrations/001_init.sql`](supabase/migrations/001_init.sql)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Telegram webhook (later)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook?url=$NEXT_PUBLIC_APP_URL/api/telegram/webhook&secret_token=$TELEGRAM_WEBHOOK_SECRET"
+```
 
-## Deploy on Vercel
+## Design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Ink `#080808` · Steel `#121416` · Ember `#d4a574`  
+Fonts: Cormorant Garamond · Outfit · Space Mono

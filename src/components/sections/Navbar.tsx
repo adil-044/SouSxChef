@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SynapseXLogo } from "../ui/SynapseXLogo";
 import { SquashHamburger } from "../ui/SquashHamburger";
-import { ScrambleText } from "../ui/ScrambleText";
 
 const LINKS = [
   { id: "experience", label: "Story" },
@@ -13,97 +13,162 @@ const LINKS = [
   { id: "pricing", label: "Pricing" },
 ] as const;
 
-export function Navbar({ entranceComplete }: { entranceComplete: boolean }) {
+export function Navbar({ entranceComplete = true }: { entranceComplete?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
-  const [ctaHovered, setCtaHovered] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const scrollToId = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <motion.nav
-      initial={{ opacity: 0 }}
-      animate={{ opacity: entranceComplete ? 1 : 0 }}
-      transition={{ duration: 0.8 }}
-      className="pointer-events-none fixed top-0 left-0 z-50 flex h-20 w-full items-center justify-between px-4 sm:px-6 md:px-8"
-    >
-      <div className="pointer-events-auto flex h-full items-center gap-2">
-        <motion.button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.18)" }}
-          whileTap={{ scale: 0.98 }}
-          className="flex h-9 items-center justify-center gap-2 rounded-[10px] bg-white/12 px-3.5 backdrop-blur-md sm:h-12 sm:rounded-[14px] sm:px-5"
-        >
-          <SynapseXLogo className="h-[14px] w-[14px] text-[var(--ember)] sm:h-[18px] sm:w-[18px]" />
-          <span className="mt-[2px] text-[13px] font-medium tracking-tight text-white sm:text-[16px]">
-            SousXChef
-          </span>
-        </motion.button>
-
-        <motion.div
-          animate={{
-            width: menuOpen
-              ? typeof window !== "undefined" && window.innerWidth < 640
-                ? "calc(100vw - 2rem - 110px)"
-                : 340
-              : typeof window !== "undefined" && window.innerWidth < 640
-                ? 36
-                : 48,
-          }}
-          transition={{ stiffness: 350, damping: 28, type: "spring" }}
-          className="flex h-9 items-center overflow-hidden rounded-[10px] bg-white/12 backdrop-blur-md sm:h-12 sm:rounded-[14px]"
-        >
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMenuOpen(!menuOpen)}
-            className={`flex items-center justify-center transition-colors ${
-              menuOpen
-                ? "ml-1 h-7 w-7 rounded-[8px] bg-white/10 hover:bg-white/20 sm:ml-1.5 sm:h-9 sm:w-9 sm:rounded-[11px]"
-                : "h-9 w-9 rounded-[10px] hover:bg-white/10 sm:h-12 sm:w-12 sm:rounded-[14px]"
-            }`}
+    <>
+      <motion.nav
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: entranceComplete ? 1 : 0, y: entranceComplete ? 0 : -8 }}
+        transition={{ duration: 0.6 }}
+        className={`fixed top-0 left-0 z-50 w-full transition-colors duration-300 ${
+          scrolled || menuOpen ? "bg-[var(--ink)]/85 backdrop-blur-md" : "bg-transparent"
+        }`}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 md:px-8">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 backdrop-blur-md transition hover:bg-white/15 sm:px-4"
           >
-            <SquashHamburger isOpen={menuOpen} />
-          </button>
+            <SynapseXLogo className="h-4 w-4 text-[var(--ember)] sm:h-[18px] sm:w-[18px]" />
+            <span className="text-[14px] font-medium tracking-tight text-white sm:text-[16px]">
+              SousXChef
+            </span>
+          </Link>
 
-          <div className="ml-3 flex items-center gap-4 overflow-hidden whitespace-nowrap sm:ml-4 sm:gap-5">
-            {LINKS.map((link, i) => (
-              <motion.button
+          {/* Desktop links */}
+          <div className="hidden items-center gap-1 md:flex">
+            {LINKS.map((link) => (
+              <button
                 key={link.id}
                 type="button"
-                initial={{ opacity: 0, x: 12 }}
-                animate={menuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: 12 }}
-                transition={{ delay: menuOpen ? 0.08 + i * 0.04 : 0 }}
-                onMouseEnter={() => setHoveredLink(link.id)}
-                onMouseLeave={() => setHoveredLink(null)}
                 onClick={() => scrollToId(link.id)}
-                className="mt-[2px] text-[13px] text-white/85 hover:text-white sm:text-[15px]"
+                className="rounded-lg px-3 py-2 text-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
               >
-                <ScrambleText text={link.label} isHovered={hoveredLink === link.id} />
-              </motion.button>
+                {link.label}
+              </button>
             ))}
           </div>
-        </motion.div>
-      </div>
 
-      <motion.a
-        href="https://calendly.com/uptisement/30min"
-        target="_blank"
-        rel="noopener noreferrer"
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        onMouseEnter={() => setCtaHovered(true)}
-        onMouseLeave={() => setCtaHovered(false)}
-        className="pointer-events-auto flex h-9 shrink-0 items-center justify-center rounded-full bg-[var(--ember)] px-5 sm:h-12 sm:px-8"
-      >
-        <span className="mt-[2px] text-[13px] font-bold text-[var(--ink)] sm:text-[15px]">
-          <ScrambleText text="Book Demo" isHovered={ctaHovered} />
-        </span>
-      </motion.a>
-    </motion.nav>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/login"
+              className="hidden rounded-full px-4 py-2 text-[13px] text-white/80 transition hover:text-white sm:inline-flex"
+            >
+              Log in
+            </Link>
+            <a
+              href="https://calendly.com/uptisement/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden rounded-full border border-white/25 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[var(--ink)] lg:inline-flex"
+            >
+              Book demo
+            </a>
+            <Link
+              href="/onboarding"
+              className="inline-flex h-9 items-center justify-center rounded-full bg-[var(--ember)] px-4 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink)] transition hover:bg-[var(--ember-hot)] sm:h-10 sm:px-5"
+            >
+              Get started
+            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 md:hidden"
+            >
+              <SquashHamburger isOpen={menuOpen} />
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/70 md:hidden"
+            onClick={() => setMenuOpen(false)}
+          >
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 320, damping: 32 }}
+              className="absolute top-0 right-0 flex h-full w-[min(100%,320px)] flex-col bg-[var(--steel)] px-6 pt-24 pb-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <nav className="flex flex-col gap-1">
+                {LINKS.map((link) => (
+                  <button
+                    key={link.id}
+                    type="button"
+                    onClick={() => scrollToId(link.id)}
+                    className="rounded-xl px-3 py-3 text-left font-display text-[1.5rem] text-white transition hover:bg-white/5"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </nav>
+              <div className="mt-auto flex flex-col gap-3 border-t border-white/10 pt-6">
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl border border-white/20 px-4 py-3 text-center text-[14px] text-white"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/onboarding"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl bg-[var(--ember)] px-4 py-3 text-center font-mono text-[12px] uppercase tracking-[0.14em] text-[var(--ink)]"
+                >
+                  Get started
+                </Link>
+                <a
+                  href="https://calendly.com/uptisement/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-center font-mono text-[11px] uppercase tracking-[0.16em] text-white/45"
+                >
+                  Book a demo
+                </a>
+              </div>
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
