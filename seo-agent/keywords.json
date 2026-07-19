@@ -1,0 +1,31 @@
+{
+  "genre": "restaurant ops — inventory, labor, staff chat, AI agents for owners",
+  "brand": "SousXChef",
+  "site_url": "https://sousxchef.online",
+  "cta_path": "/onboarding",
+  "voice": [
+    "Pain-first for restaurant owners",
+    "Practical weekly rhythms",
+    "No generic SaaS fluff",
+    "Soft CTA to SousXChef onboarding",
+    "Agent-first kitchen brain positioning"
+  ],
+  "pillars": [
+    "restaurant inventory management software",
+    "best restaurant management apps",
+    "AI labor scheduling restaurants",
+    "restaurant WhatsApp ordering",
+    "restaurant staff scheduling app",
+    "restaurant demand forecasting",
+    "restaurant labor cost optimization",
+    "AI restaurant management"
+  ],
+  "model": "tencent/hy3:free",
+  "free_models": [
+    "tencent/hy3:free",
+    "openai/gpt-oss-20b:free",
+    "google/gemma-4-31b-it:free",
+    "nvidia/nemotron-nano-9b-v2:free"
+  ],
+  "openrouter_base": "https://openrouter.ai/api/v1"
+}
