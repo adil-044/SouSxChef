@@ -7,10 +7,11 @@ import { SynapseXLogo } from "../ui/SynapseXLogo";
 import { SquashHamburger } from "../ui/SquashHamburger";
 
 const LINKS = [
-  { id: "experience", label: "Story" },
-  { id: "agents", label: "Agents" },
-  { id: "proof", label: "Proof" },
-  { id: "pricing", label: "Pricing" },
+  { id: "experience", label: "Story", type: "scroll" as const },
+  { id: "agents", label: "Agents", type: "scroll" as const },
+  { id: "proof", label: "Proof", type: "scroll" as const },
+  { id: "pricing", label: "Pricing", type: "scroll" as const },
+  { id: "blog", label: "Blog", type: "link" as const, href: "/blog" },
 ] as const;
 
 export function Navbar({ entranceComplete = true }: { entranceComplete?: boolean }) {
@@ -65,18 +66,27 @@ export function Navbar({ entranceComplete = true }: { entranceComplete?: boolean
 
           {/* Desktop links */}
           <div className="hidden items-center gap-1 md:flex">
-            {LINKS.map((link) => (
-              <button
-                key={link.id}
-                type="button"
-                onClick={() => scrollToId(link.id)}
-                className="rounded-lg px-3 py-2 text-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
-              >
-                {link.label}
-              </button>
-            ))}
+            {LINKS.map((link) =>
+              link.type === "link" ? (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className="rounded-lg px-3 py-2 text-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.id}
+                  type="button"
+                  onClick={() => scrollToId(link.id)}
+                  className="rounded-lg px-3 py-2 text-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+                >
+                  {link.label}
+                </button>
+              )
+            )}
           </div>
-
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
@@ -130,16 +140,27 @@ export function Navbar({ entranceComplete = true }: { entranceComplete?: boolean
               onClick={(e) => e.stopPropagation()}
             >
               <nav className="flex flex-col gap-1">
-                {LINKS.map((link) => (
-                  <button
-                    key={link.id}
-                    type="button"
-                    onClick={() => scrollToId(link.id)}
-                    className="rounded-xl px-3 py-3 text-left font-display text-[1.5rem] text-white transition hover:bg-white/5"
-                  >
-                    {link.label}
-                  </button>
-                ))}
+                {LINKS.map((link) =>
+                  link.type === "link" ? (
+                    <Link
+                      key={link.id}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="rounded-xl px-3 py-3 text-left font-display text-[1.5rem] text-white transition hover:bg-white/5"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={link.id}
+                      type="button"
+                      onClick={() => scrollToId(link.id)}
+                      className="rounded-xl px-3 py-3 text-left font-display text-[1.5rem] text-white transition hover:bg-white/5"
+                    >
+                      {link.label}
+                    </button>
+                  )
+                )}
               </nav>
               <div className="mt-auto flex flex-col gap-3 border-t border-white/10 pt-6">
                 <Link
