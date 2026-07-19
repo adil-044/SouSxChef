@@ -77,7 +77,7 @@ export function Experience({ onReady }: { onReady?: () => void }) {
         start: "top top",
         end: "bottom bottom",
         pin: pin,
-        scrub: 0.55,
+        scrub: 0.7,
         anticipatePin: 1,
         pinSpacing: true,
         invalidateOnRefresh: true,
@@ -112,32 +112,40 @@ export function Experience({ onReady }: { onReady?: () => void }) {
 
           chapters.forEach((el, i) => {
             const c = CHAPTERS[i];
+            const span = Math.max(c.to - c.from, 0.05);
             const mid = (c.from + c.to) / 2;
-            const half = Math.max((c.to - c.from) / 2, 0.035);
+            const half = span / 2;
             const dist = Math.abs(self.progress - mid);
-            const visibility = gsap.utils.clamp(0, 1, 1 - dist / (half * 1.25));
+            // Wide plateau: full opacity across most of the beat, soft fade only at edges
+            const hold = half * 0.72;
+            const fade = half * 1.35;
+            let visibility = 0;
+            if (dist <= hold) visibility = 1;
+            else if (dist < fade) visibility = 1 - (dist - hold) / (fade - hold);
+            visibility = gsap.utils.clamp(0, 1, visibility);
+
             const signed = (self.progress - mid) / half;
-            const y = signed * -24;
-            const blur = (1 - visibility) * 8;
+            const y = signed * -18;
+            const blur = (1 - visibility) * 6;
 
             gsap.set(el, {
               autoAlpha: visibility,
-              pointerEvents: visibility > 0.4 ? "auto" : "none",
+              pointerEvents: visibility > 0.35 ? "auto" : "none",
             });
 
             const apply = (node: Element | null, lag: number) => {
               if (!node) return;
-              const v = gsap.utils.clamp(0, 1, visibility * 1.15 - lag);
+              const v = gsap.utils.clamp(0, 1, visibility * 1.08 - lag);
               gsap.set(node, {
                 autoAlpha: v,
-                y: y + (1 - v) * 16,
+                y: y + (1 - v) * 12,
                 filter: `blur(${blur * (1 - v * 0.4)}px)`,
               });
             };
 
             apply(el.querySelector("[data-anim='eyebrow']"), 0);
-            apply(el.querySelector("[data-anim='title']"), 0.1);
-            apply(el.querySelector("[data-anim='body']"), 0.18);
+            apply(el.querySelector("[data-anim='title']"), 0.05);
+            apply(el.querySelector("[data-anim='body']"), 0.1);
           });
         },
       });
@@ -159,7 +167,7 @@ export function Experience({ onReady }: { onReady?: () => void }) {
       id="experience"
       ref={rootRef}
       className="relative z-0"
-      style={{ height: `${CHAPTERS.length * 90}vh` }}
+      style={{ height: `${CHAPTERS.length * 120}vh` }}
     >
       <div
         ref={pinRef}
