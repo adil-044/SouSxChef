@@ -40,6 +40,11 @@ export function Navbar({ entranceComplete = true }: { entranceComplete?: boolean
 
   const scrollToId = (id: string) => {
     setMenuOpen(false);
+    if (typeof window === "undefined") return;
+    if (window.location.pathname !== "/") {
+      window.location.href = `/#${id}`;
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
