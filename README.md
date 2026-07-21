@@ -1,46 +1,100 @@
-# SousXChef
+<p align="center">
+  <strong>SousXChef</strong>
+</p>
 
-AI agents for restaurant kitchens — inventory, labor, Telegram chat, forecasting, and an owner dashboard.
+<h1 align="center">AI agents for restaurant kitchens</h1>
 
-**Live:** [sousxchef.online](https://sousxchef.online) · [sou-sx-chef.vercel.app](https://sou-sx-chef.vercel.app)
+<p align="center">
+  Inventory photo logs · labour scheduling · staff Telegram chat · demand forecasting · owner dashboard.<br />
+  Built for single-location independents — not enterprise bloat.
+</p>
 
-## Stack
+<p align="center">
+  <a href="https://sousxchef.online"><img src="https://img.shields.io/badge/Live-sousxchef.online-d4a574?style=for-the-badge" alt="Live" /></a>
+  <a href="https://sou-sx-chef.vercel.app"><img src="https://img.shields.io/badge/Demo-Vercel-000000?style=for-the-badge&logo=vercel" alt="Vercel" /></a>
+  <a href="https://sousxchef.online/blog"><img src="https://img.shields.io/badge/Blog-SEO-080808?style=for-the-badge" alt="Blog" /></a>
+  <a href="https://calendly.com/uptisement/30min"><img src="https://img.shields.io/badge/Book-Demo-121416?style=for-the-badge" alt="Demo" /></a>
+</p>
 
-- Next.js 16 (App Router) + TypeScript + Tailwind v4
-- GSAP ScrollTrigger cinematic landing
-- Supabase Auth/Postgres (optional — **Demo mode** without keys)
-- Telegram Bot webhook (`/api/telegram/webhook`)
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/GSAP-ScrollTrigger-88CE02?logo=greensock&logoColor=white" alt="GSAP" />
+  <img src="https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Supabase-optional-3FCF8E?logo=supabase&logoColor=white" alt="Supabase" />
+</p>
+
+---
+
+## Live
+
+| | |
+|---|---|
+| **Product** | [sousxchef.online](https://sousxchef.online) |
+| **Vercel** | [sou-sx-chef.vercel.app](https://sou-sx-chef.vercel.app) |
+| **Blog** | [sousxchef.online/blog](https://sousxchef.online/blog) |
+| **Sitemap** | [sousxchef.online/sitemap.xml](https://sousxchef.online/sitemap.xml) |
+| **Book 10 min** | [Calendly](https://calendly.com/uptisement/30min) |
+
+---
+
+## Why it exists
+
+Owners still run inventory on clipboards and labour on Sunday gut feel. Staff ping “are we out of X?” in group chat mid-service.
+
+SousXChef turns that chaos into agents:
+
+| Agent | Job |
+|---|---|
+| Inventory | Photo → counts + waste alerts |
+| Labour | Busy-pattern staffing suggestions |
+| Chat | Staff Telegram / WhatsApp-style answers |
+| Forecast | Cover hints for ordering |
+| Dashboard | Live KPIs for the owner |
+
+---
+
+## Landing (shipped)
+
+Cinematic **GSAP pin + video scrub** walkthrough (`showcase.mp4`) → CTA → agents → proof → pricing.
+
+**Pricing on-page:** Line \$149 · Pass \$349 · House custom  
+
+**Tokens:** Ink `#080808` · Steel `#121416` · Ember `#d4a574`  
+**Type:** Cormorant Garamond · Outfit · Space Mono
+
+---
 
 ## App routes
 
 | Path | Description |
-|------|-------------|
+|---|---|
 | `/` | Immersive scroll landing |
-| `/login` `/signup` | Auth UI (Supabase when configured) |
-| `/onboarding` | Multi-step kitchen questionnaire |
-| `/dashboard` | Owner home + KPIs |
-| `/dashboard/inventory` | SKU table + count log |
-| `/dashboard/schedule` | Weekly labor grid |
-| `/dashboard/chat` | Staff / agent thread |
-| `/dashboard/forecast` | Cover hints |
-| `/dashboard/settings` | Telegram link |
+| `/blog` | SEO content (JSON posts + daily agent) |
+| `/login` `/signup` | Auth (Supabase when configured) |
+| `/onboarding` | Kitchen questionnaire |
+| `/dashboard/*` | Inventory · schedule · chat · forecast · settings |
 
-## Local demo (no secrets)
+**Demo mode:** works with zero secrets — data in `localStorage` (`sousxchef-demo-v1`).
+
+---
+
+## Quick start
 
 ```bash
+git clone https://github.com/adil-044/SouSxChef.git
+cd SouSxChef
 npm install
 npm run dev
 ```
 
-1. Open `/` → **Get started** or `/login` → **Continue in demo mode**
-2. Complete onboarding → dashboard
-3. Data persists in `localStorage` (`sousxchef-demo-v1`)
+Open `/` → **Get started** or `/login` → **Continue in demo mode**.
 
-## Environment
+### Optional env
 
-Copy `.env.example` → `.env.local` when ready:
+Copy `.env.example` → `.env.local`:
 
-```bash
+```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
@@ -50,15 +104,27 @@ TELEGRAM_WEBHOOK_SECRET=
 NEXT_PUBLIC_APP_URL=https://sousxchef.online
 ```
 
-SQL schema: [`supabase/migrations/001_init.sql`](supabase/migrations/001_init.sql)
+Schema: [`supabase/migrations/001_init.sql`](supabase/migrations/001_init.sql)
 
-### Telegram webhook (later)
+---
 
-```bash
-curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook?url=$NEXT_PUBLIC_APP_URL/api/telegram/webhook&secret_token=$TELEGRAM_WEBHOOK_SECRET"
-```
+## SEO agent
 
-## Design
+Daily restaurant-genre posts via `seo-agent/` (OpenRouter free models → `content/blog/*.json`).
 
-Ink `#080808` · Steel `#121416` · Ember `#d4a574`  
-Fonts: Cormorant Garamond · Outfit · Space Mono
+---
+
+## Author
+
+**Adil (Dean)** — Ottawa / Hamilton  
+Next.js + GSAP product builder. Open to freelance landing pages & SaaS MVPs.
+
+- [@adil-044](https://github.com/adil-044)
+- [HireReady](https://github.com/adil-044/resume-ats) — ATS resume optimizer
+- [calendly.com/uptisement/30min](https://calendly.com/uptisement/30min)
+
+---
+
+## License
+
+Source available for portfolio review. Commercial use — ask first.
