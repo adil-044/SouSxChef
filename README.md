@@ -99,12 +99,24 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 TELEGRAM_BOT_TOKEN=
-TELEGRAM_BOT_USERNAME=SousXChefBot
+NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=SousXChefBot
 TELEGRAM_WEBHOOK_SECRET=
 NEXT_PUBLIC_APP_URL=https://sousxchef.online
+STRIPE_SECRET_KEY=
+STRIPE_PRICE_LINE=
+STRIPE_PRICE_PASS=
 ```
 
-Schema: [`supabase/migrations/001_init.sql`](supabase/migrations/001_init.sql)
+### SaaS backend (multi-tenant)
+
+Apply SQL in order:
+
+1. [`supabase/migrations/001_init.sql`](supabase/migrations/001_init.sql)
+2. [`supabase/migrations/002_saas_multitenant.sql`](supabase/migrations/002_saas_multitenant.sql)
+
+Org → N restaurants · membership RLS · inventory / labour / chat / forecast APIs · Telegram link bind · Stripe stubs.
+
+Full map: [`docs/SAAS_BACKEND.md`](docs/SAAS_BACKEND.md) · health: `GET /api/health`
 
 ---
 

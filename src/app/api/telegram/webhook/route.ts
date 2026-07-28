@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
-import { answerInventoryQuestion, createSeedStore } from "@/lib/demo-store";
+import { createServiceClient } from "@/lib/supabase/auth";
+import { isSupabaseConfigured, isTelegramConfigured } from "@/lib/supabase/config";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { handleTelegramUpdate } from "@/lib/domain/telegram";
+import { answerInventoryQuestion, createSeedStore } from "@/lib/demo-store";
+import { jsonOk } from "@/lib/saas/errors";
 
 type TgUpdate = {
   message?: {
@@ -10,18 +14,34 @@ type TgUpdate = {
   };
 };
 
+const recentChats = new Map<string, number>();
+const RATE_WINDOW_MS = 2000;
+
+function rateLimited(chatId: string): boolean {
+  const now = Date.now();
+  const last = recentChats.get(chatId) || 0;
+  if (now - last < RATE_WINDOW_MS) return true;
+  recentChats.set(chatId, now);
+  return false;
+}
+
 /**
- * Telegram webhook.
- * Without TELEGRAM_BOT_TOKEN, still accepts updates and returns a simulated reply.
- * Link codes: /start link_xxxxx — stub accepts any start payload.
+ * Telegram webhook — service role when Supabase live.
+ * Link: /start link_xxxxx binds chat to restaurant.
  */
 export async function POST(req: Request) {
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  const isProd = process.env.NODE_ENV === "production";
   if (secret && secret !== "change_me") {
     const header = req.headers.get("x-telegram-bot-api-secret-token");
     if (header !== secret) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
+  } else if (isProd && isTelegramConfigured()) {
+    return NextResponse.json(
+      { ok: false, error: "TELEGRAM_WEBHOOK_SECRET required in production" },
+      { status: 503 }
+    );
   }
 
   let update: TgUpdate;
@@ -37,32 +57,40 @@ export async function POST(req: Request) {
   }
 
   const chatId = String(msg.chat.id);
-  const text = msg.text.trim();
-  const seed = createSeedStore();
-
-  if (text.startsWith("/start")) {
-    const reply =
-      "SousXChef linked (or ready to link). Ask inventory questions like “how much salmon left?”";
-    const send = await sendTelegramMessage(chatId, reply);
-    return NextResponse.json({ ok: true, linked: true, send });
+  if (rateLimited(chatId)) {
+    return NextResponse.json({ ok: true, rateLimited: true });
   }
 
-  const reply = answerInventoryQuestion(text, seed.inventory);
-  const send = await sendTelegramMessage(chatId, reply);
+  // Live path
+  if (isSupabaseConfigured()) {
+    const supabase = createServiceClient();
+    const result = await handleTelegramUpdate(supabase, msg);
+    if ("ignored" in result && result.ignored) {
+      return NextResponse.json({ ok: true, ignored: true });
+    }
+    const send = await sendTelegramMessage(chatId, result.reply);
+    return NextResponse.json({
+      ok: true,
+      restaurantId: result.restaurantId,
+      reply: result.reply,
+      send,
+    });
+  }
 
-  return NextResponse.json({
-    ok: true,
-    chatId,
-    question: text,
-    reply,
-    send,
-  });
+  // Demo fallback
+  const text = msg.text.trim();
+  const seed = createSeedStore();
+  const reply = text.startsWith("/start")
+    ? "SousXChef demo mode — connect Supabase + bot token for real kitchen link. Ask “how much salmon left?”"
+    : answerInventoryQuestion(text, seed.inventory);
+  const send = await sendTelegramMessage(chatId, reply);
+  return NextResponse.json({ ok: true, mode: "demo", chatId, reply, send });
 }
 
 export async function GET() {
-  return NextResponse.json({
-    ok: true,
+  return jsonOk({
     endpoint: "/api/telegram/webhook",
-    configured: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+    configured: isTelegramConfigured(),
+    supabase: isSupabaseConfigured(),
   });
 }

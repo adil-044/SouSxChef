@@ -1,5 +1,8 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireUser } from "@/lib/supabase/auth";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { ApiError, jsonError, jsonOk, requestIdFrom } from "@/lib/saas/errors";
+import { onboardRestaurant } from "@/lib/domain/onboarding";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -12,19 +15,36 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const requestId = requestIdFrom(req);
   try {
     const body = schema.parse(await req.json());
-    // Persist to Supabase when configured; demo clients also write localStorage.
-    return NextResponse.json({
-      ok: true,
-      mode: "demo",
-      restaurant: body,
-      message: "Onboarding accepted. Connect Supabase to persist server-side.",
-    });
-  } catch (err) {
-    return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : "Invalid payload" },
-      { status: 400 }
+
+    if (!isSupabaseConfigured()) {
+      return jsonOk(
+        {
+          mode: "demo",
+          restaurant: body,
+          message: "Onboarding accepted (demo). Connect Supabase to persist.",
+        },
+        { requestId }
+      );
+    }
+
+    const session = await requireUser();
+    if (!session) throw new ApiError("unauthorized", "Sign in required", 401);
+
+    const result = await onboardRestaurant(session.supabase, body);
+    return jsonOk(
+      {
+        mode: "live",
+        organizationId: result.organization_id,
+        restaurantId: result.restaurant_id,
+        telegramLinkCode: result.telegram_link_code,
+        restaurant: body,
+      },
+      { requestId }
     );
+  } catch (err) {
+    return jsonError(err, requestId);
   }
 }

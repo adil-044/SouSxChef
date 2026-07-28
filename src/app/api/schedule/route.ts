@@ -3,51 +3,22 @@ import { requireUser } from "@/lib/supabase/auth";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { ApiError, jsonError, jsonOk, requestIdFrom } from "@/lib/saas/errors";
 import { resolveTenant, restaurantIdFromRequest } from "@/lib/saas/tenant";
-import { chatReply } from "@/lib/domain/chat";
+import { listSchedule, addScheduleSlot } from "@/lib/domain/schedule";
 import { demoMode } from "@/lib/domain/inventory";
 
-const schema = z.object({
-  message: z.string().min(1),
-  author: z.string().optional(),
+const postSchema = z.object({
+  day: z.string().min(1),
+  role: z.string().optional(),
+  staffName: z.string().optional(),
+  start: z.string().optional(),
+  end: z.string().optional(),
 });
-
-export async function POST(req: Request) {
-  const requestId = requestIdFrom(req);
-  try {
-    const { message, author } = schema.parse(await req.json());
-
-    if (!isSupabaseConfigured() || demoMode()) {
-      const result = await chatReply(null, null, { message, author });
-      return jsonOk({ mode: "demo", reply: result.reply }, { requestId });
-    }
-
-    const session = await requireUser();
-    if (!session) throw new ApiError("unauthorized", "Sign in required", 401);
-    const tenant = await resolveTenant(
-      session.supabase,
-      session.user.id,
-      restaurantIdFromRequest(req)
-    );
-    const result = await chatReply(session.supabase, tenant, {
-      message,
-      author: author || session.user.email || "owner",
-      channel: "app",
-    });
-    return jsonOk(
-      { mode: "live", reply: result.reply, restaurantId: tenant.restaurantId },
-      { requestId }
-    );
-  } catch (err) {
-    return jsonError(err, requestId);
-  }
-}
 
 export async function GET(req: Request) {
   const requestId = requestIdFrom(req);
   try {
-    const { listMessages } = await import("@/lib/domain/chat");
     if (!isSupabaseConfigured() || demoMode()) {
-      const result = await listMessages(null, "demo");
+      const result = await listSchedule(null, "demo");
       return jsonOk(result, { requestId });
     }
     const session = await requireUser();
@@ -57,8 +28,29 @@ export async function GET(req: Request) {
       session.user.id,
       restaurantIdFromRequest(req)
     );
-    const result = await listMessages(session.supabase, tenant.restaurantId);
+    const result = await listSchedule(session.supabase, tenant.restaurantId);
     return jsonOk({ ...result, restaurantId: tenant.restaurantId }, { requestId });
+  } catch (err) {
+    return jsonError(err, requestId);
+  }
+}
+
+export async function POST(req: Request) {
+  const requestId = requestIdFrom(req);
+  try {
+    const body = postSchema.parse(await req.json());
+    if (!isSupabaseConfigured() || demoMode()) {
+      return jsonOk({ mode: "demo", slot: body }, { requestId });
+    }
+    const session = await requireUser();
+    if (!session) throw new ApiError("unauthorized", "Sign in required", 401);
+    const tenant = await resolveTenant(
+      session.supabase,
+      session.user.id,
+      restaurantIdFromRequest(req)
+    );
+    const slot = await addScheduleSlot(session.supabase, tenant, body);
+    return jsonOk({ mode: "live", slot }, { requestId });
   } catch (err) {
     return jsonError(err, requestId);
   }

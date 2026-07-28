@@ -14,3 +14,8 @@ export function isTelegramConfigured() {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   return Boolean(token && token !== "placeholder");
 }
+
+export function isStripeConfigured() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  return Boolean(key && key.startsWith("sk_"));
+}
