@@ -17,7 +17,10 @@ export function Experience({ onReady }: { onReady?: () => void }) {
   const veilKitchen = useRef<HTMLDivElement>(null);
   const veilVoid = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
   const [active, setActive] = useState(0);
+  const [mediaReady, setMediaReady] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -25,16 +28,15 @@ export function Experience({ onReady }: { onReady?: () => void }) {
     if (!video) return;
     let done = false;
 
-    const markReady = () => {
+    const markMedia = () => {
       if (done) return;
       done = true;
-      setReady(true);
-      onReady?.();
+      setMediaReady(true);
     };
 
-    if (video.readyState >= 1) markReady();
-    else video.addEventListener("loadedmetadata", markReady, { once: true });
-    const fallback = window.setTimeout(markReady, 1200);
+    if (video.readyState >= 1) markMedia();
+    else video.addEventListener("loadedmetadata", markMedia, { once: true });
+    const fallback = window.setTimeout(markMedia, 1200);
 
     video.muted = true;
     video.playsInline = true;
@@ -50,20 +52,21 @@ export function Experience({ onReady }: { onReady?: () => void }) {
 
     return () => {
       window.clearTimeout(fallback);
-      video.removeEventListener("loadedmetadata", markReady);
+      video.removeEventListener("loadedmetadata", markMedia);
     };
-  }, [onReady]);
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
     const pin = pinRef.current;
     const video = videoRef.current;
-    if (!root || !pin || !video || !ready) return;
+    if (!root || !pin || !video || !mediaReady) return;
 
     const ctx = gsap.context(() => {
       const chapters = gsap.utils.toArray<HTMLElement>("[data-chapter]");
 
       chapters.forEach((el, i) => {
+        // CSS FOUC hide cleared; GSAP owns visibility
         gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 });
         gsap.set(el.querySelectorAll("[data-anim]"), {
           autoAlpha: i === 0 ? 1 : 0,
@@ -153,6 +156,9 @@ export function Experience({ onReady }: { onReady?: () => void }) {
       requestAnimationFrame(() => ScrollTrigger.refresh());
     }, root);
 
+    setReady(true);
+    onReadyRef.current?.();
+
     const onResize = () => ScrollTrigger.refresh();
     window.addEventListener("resize", onResize);
 
@@ -160,7 +166,7 @@ export function Experience({ onReady }: { onReady?: () => void }) {
       window.removeEventListener("resize", onResize);
       ctx.revert();
     };
-  }, [ready]);
+  }, [mediaReady]);
 
   return (
     <section
@@ -168,6 +174,7 @@ export function Experience({ onReady }: { onReady?: () => void }) {
       ref={rootRef}
       className="relative z-0"
       style={{ height: `${CHAPTERS.length * 120}vh` }}
+      data-experience-ready={ready ? "true" : "false"}
     >
       <div
         ref={pinRef}
